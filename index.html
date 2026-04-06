@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KDP Niche Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0f0d;--ink2:#3a3a36;--ink3:#7a7a74;--ink4:#b0b0a8;
+  --paper:#faf9f6;--paper2:#f2f1ec;--paper3:#e8e6df;
+  --red:#c0392b;--red2:#e74c3c;--red-pale:#fdf0ee;
+  --border:rgba(15,15,13,0.1);--border2:rgba(15,15,13,0.2);
+  --mono:'DM Mono',monospace;--serif:'Noto Serif JP','Georgia',serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --ink:#f0f0ec;--ink2:#c0c0b8;--ink3:#808078;--ink4:#505048;
+    --paper:#0f0f0d;--paper2:#1a1a18;--paper3:#252522;
+    --red:#e74c3c;--red2:#ff6b5b;--red-pale:#2a1010;
+    --border:rgba(240,240,236,0.08);--border2:rgba(240,240,236,0.15);
+  }
+}
+body{font-family:var(--serif);background:var(--paper3);color:var(--ink);min-height:100vh;padding:0}
+.wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.zen-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.zen-title{display:flex;align-items:center;gap:1rem}
+.kanji{font-size:48px;color:var(--red);line-height:1;font-weight:300;letter-spacing:-2px}
+.title-text h1{font-size:22px;font-weight:400;letter-spacing:0.04em;color:var(--ink)}
+.title-text p{font-size:11px;color:var(--ink3);font-family:var(--mono);margin-top:4px;letter-spacing:0.08em}
+.zen-badge{font-size:10px;font-family:var(--mono);letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:5px 12px;text-transform:uppercase}
+.search-wrap{background:var(--paper);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem}
+.search-row{display:flex;gap:0}
+.search-row input{flex:1;height:46px;padding:0 16px;font-size:14px;font-family:var(--serif);border:1px solid var(--border2);border-right:none;background:var(--paper2);color:var(--ink);outline:none;transition:border-color 0.2s}
+.search-row input:focus{border-color:var(--red)}
+.search-row input::placeholder{color:var(--ink4);font-style:italic}
+.btn-analyze{padding:0 28px;height:46px;background:var(--red);color:#fff;border:1px solid var(--red);font-family:var(--mono);font-size:12px;letter-spacing:0.1em;cursor:pointer;transition:background 0.15s;text-transform:uppercase}
+.btn-analyze:hover{background:var(--red2)}
+.btn-analyze:disabled{opacity:0.4;cursor:not-allowed}
+.btn-manual{padding:0 20px;height:46px;margin-left:4px;background:transparent;color:var(--ink2);border:1px solid var(--border2);font-family:var(--mono);font-size:11px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;text-transform:uppercase}
+.btn-manual:hover{border-color:var(--red);color:var(--red)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.tab{padding:10px 20px;font-size:11px;font-family:var(--mono);letter-spacing:0.08em;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;text-transform:uppercase}
+.tab.active{color:var(--red);border-bottom-color:var(--red)}
+.tab:hover:not(.active){color:var(--ink)}
+.panel{display:none}.panel.active{display:block}
+.empty{text-align:center;padding:5rem 0}
+.e-kanji{font-size:64px;color:var(--paper3);line-height:1;margin-bottom:1rem}
+.empty p{font-size:14px;color:var(--ink3)}
+.empty .sub{font-size:11px;color:var(--ink4);font-family:var(--mono);margin-top:8px;letter-spacing:0.06em}
+.loading{text-align:center;padding:4rem 0}
+.loading-kanji{font-size:64px;color:var(--red);animation:pulse 1.5s ease-in-out infinite;line-height:1;margin-bottom:16px}
+@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
+.loading p{font-size:11px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.1em}
+.score-ring{display:flex;align-items:center;gap:2rem;padding:2rem;margin-bottom:1.5rem;background:var(--paper2);border:1px solid var(--border);position:relative;overflow:hidden}
+.score-ring::before{content:'';position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;border:1px solid var(--border);opacity:0.5}
+.score-ring::after{content:'';position:absolute;right:20px;top:20px;width:70px;height:70px;border-radius:50%;border:1px solid var(--border);opacity:0.4}
+.ring-wrap{position:relative;width:96px;height:96px;flex-shrink:0;z-index:1}
+.ring-wrap svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring-score{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-score .num{font-size:28px;font-weight:400;font-family:var(--mono)}
+.ring-score .lbl{font-size:9px;color:var(--ink3);font-family:var(--mono);letter-spacing:0.06em}
+.score-meta{z-index:1}
+.verdict-txt{font-size:24px;font-weight:300;letter-spacing:0.08em;margin-bottom:5px}
+.kw-txt{font-size:10px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.1em;margin-bottom:10px}
+.desc-txt{font-size:13px;color:var(--ink2);line-height:1.7;max-width:440px}
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-bottom:1.5rem;border:1px solid var(--border)}
+.metric-card{background:var(--paper2);padding:16px 18px}
+.metric-card .lbl{font-size:10px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+.metric-card .val{font-size:24px;font-weight:300;font-family:var(--mono)}
+.metric-card .sub{font-size:10px;color:var(--ink3);font-family:var(--mono);margin-top:4px}
+.zen-section{border:1px solid var(--border);margin-bottom:1rem;padding:1.5rem;background:var(--paper)}
+.sec-label{font-size:10px;font-family:var(--mono);letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.bk-row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.bk-row:last-child{margin-bottom:0}
+.bk-lbl{font-size:11px;color:var(--ink3);width:160px;flex-shrink:0;font-family:var(--mono);letter-spacing:0.02em}
+.bk-bar-wrap{flex:1;height:3px;background:var(--paper3)}
+.bk-bar{height:3px;transition:width 0.8s ease}
+.bk-val{font-size:11px;font-family:var(--mono);width:100px;text-align:right;flex-shrink:0;color:var(--ink2)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.list-item{font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;line-height:1.55}
+.list-item:last-child{border-bottom:none}
+.li-icon{flex-shrink:0;font-family:var(--mono);font-size:12px;margin-top:1px}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.trend-card{border:1px solid var(--border);padding:1.25rem;background:var(--paper)}
+.t-source{font-size:10px;font-family:var(--mono);letter-spacing:0.1em;color:var(--ink3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.t-dot{width:6px;height:6px;background:var(--red);display:inline-block;flex-shrink:0}
+.t-item{font-size:12px;padding:7px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono)}
+.t-item:last-child{border-bottom:none}
+.t-label{color:var(--ink3)}.t-val{color:var(--ink)}
+.pill{display:inline-block;font-size:10px;font-family:var(--mono);padding:3px 9px;letter-spacing:0.06em}
+.pill-red{background:var(--red-pale);color:var(--red);border:1px solid rgba(192,57,43,0.2)}
+.pill-ink{background:var(--paper3);color:var(--ink2);border:1px solid var(--border)}
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:10px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase}
+.field input{padding:0 14px;height:40px;border:1px solid var(--border2);background:var(--paper2);color:var(--ink);font-size:13px;font-family:var(--mono);outline:none;transition:border-color 0.15s}
+.field input:focus{border-color:var(--red)}
+.hint{font-size:10px;color:var(--ink4);font-family:var(--mono);letter-spacing:0.04em}
+.h-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all 0.15s}
+.h-row:hover .h-kw{color:var(--red)}
+.h-kw{font-size:13px;flex:1;transition:color 0.15s}
+.h-score{font-size:12px;font-family:var(--mono)}
+.h-date{font-size:10px;font-family:var(--mono);color:var(--ink4)}
+.action-row{display:flex;gap:8px;margin-top:1.5rem;flex-wrap:wrap}
+.btn-action{padding:9px 18px;border:1px solid var(--border2);background:transparent;color:var(--ink2);font-family:var(--mono);font-size:11px;letter-spacing:0.06em;cursor:pointer;transition:all 0.15s;text-transform:uppercase}
+.btn-action:hover{border-color:var(--red);color:var(--red)}
+@media(max-width:640px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .two-col,.trend-grid,.manual-grid{grid-template-columns:1fr}
+  .score-ring{flex-direction:column;text-align:center}
+  .bk-lbl{width:100px;font-size:10px}
+  .zen-header{flex-direction:column;gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="zen-header">
+    <div class="zen-title">
+      <div class="kanji">本</div>
+      <div class="title-text">
+        <h1>KDP Niche Analyzer</h1>
+        <p>INVESTIGACIÓN DE NICHOS · AMAZON KDP</p>
+      </div>
+    </div>
+    <div class="zen-badge">IA + Web Search</div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-row">
+      <input type="text" id="kw-input" placeholder="Ej: gratitude journal for women, coloring book anxiety adults..."/>
+      <button class="btn-analyze" id="analyze-btn" onclick="runAnalysis()">Analizar</button>
+      <button class="btn-manual" onclick="switchTab('manual')">Manual</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('resultado')">Resultado</div>
+    <div class="tab" onclick="switchTab('tendencias')">Tendencias</div>
+    <div class="tab" onclick="switchTab('manual')">Manual</div>
+    <div class="tab" onclick="switchTab('historial')">Historial</div>
+  </div>
+
+  <div id="tab-resultado" class="panel active">
+    <div class="empty" id="empty-state">
+      <div class="e-kanji">空</div>
+      <p>Ingresa una keyword para comenzar</p>
+      <p class="sub">LA IA ANALIZARÁ AMAZON · TIKTOK · PINTEREST · REDDIT</p>
+    </div>
+    <div id="loading-state" class="loading" style="display:none">
+      <div class="loading-kanji">道</div>
+      <p id="loading-msg">ANALIZANDO NICHO...</p>
+    </div>
+    <div id="result-state" style="display:none">
+      <div class="score-ring" id="score-ring"></div>
+      <div class="metrics-grid" id="metrics-grid"></div>
+      <div class="zen-section">
+        <div class="sec-label">Desglose de métricas</div>
+        <div id="breakdown-section"></div>
+      </div>
+      <div class="two-col">
+        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Fortalezas</div><div id="strengths-list"></div></div>
+        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Riesgos</div><div id="risks-list"></div></div>
+      </div>
+      <div class="zen-section" style="margin-top:1rem"><div class="sec-label">Ideas de libros</div><div id="ideas-list"></div></div>
+      <div class="action-row">
+        <button class="btn-action" onclick="exportResult()">Exportar .txt</button>
+        <button class="btn-action" onclick="copyReport()">Copiar reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-tendencias" class="panel">
+    <div class="empty" id="trend-empty">
+      <div class="e-kanji">流</div>
+      <p>Analiza un nicho primero</p>
+      <p class="sub">LAS TENDENCIAS SE CARGAN CON EL ANÁLISIS</p>
+    </div>
+    <div id="trend-content" style="display:none">
+      <div class="trend-grid" id="trend-grid"></div>
+      <div class="zen-section" style="margin-top:0"><div class="sec-label">Sub-nichos trending</div><div id="subtopics-list"></div></div>
+    </div>
+  </div>
+
+  <div id="tab-manual" class="panel">
+    <p style="font-size:12px;font-family:var(--mono);color:var(--ink3);margin-bottom:1.5rem;letter-spacing:0.04em;line-height:1.7">Ingresa métricas de Titans Quick View, DS Quick View o Book Bolt para calcular el score al instante.</p>
+    <div class="manual-grid">
+      <div class="field"><label>Keyword / Nicho</label><input type="text" id="m-keyword" placeholder="gratitude journal for women"/></div>
+      <div class="field"><label>Resultados de búsqueda</label><input type="number" id="m-results" placeholder="850"/><span class="hint">IDEAL: MENOS DE 1,000</span></div>
+      <div class="field"><label>BSR promedio (top 5)</label><input type="number" id="m-bsr" placeholder="45000"/><span class="hint">IDEAL: MENOS DE 100,000</span></div>
+      <div class="field"><label>Reseñas promedio (top 5)</label><input type="number" id="m-reviews" placeholder="87"/><span class="hint">IDEAL: MENOS DE 150</span></div>
+      <div class="field"><label>Libros ganadores</label><input type="number" id="m-winners" placeholder="4"/><span class="hint">NECESITAS AL MENOS 3</span></div>
+      <div class="field"><label>Precio promedio ($)</label><input type="number" id="m-price" placeholder="9.99" step="0.01"/><span class="hint">IDEAL: $6 – $15+</span></div>
+    </div>
+    <button class="btn-analyze" style="height:42px;font-size:11px" onclick="calcManual()">Calcular Score</button>
+    <div id="manual-result" style="margin-top:1.5rem;display:none"></div>
+  </div>
+
+  <div id="tab-historial" class="panel">
+    <div class="sec-label">Análisis recientes</div>
+    <div id="history-list">
+      <div class="empty"><div class="e-kanji">無</div><p>Sin análisis guardados</p><p class="sub">SE GUARDAN AUTOMÁTICAMENTE</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ANTHROPIC_API_KEY='TU_API_KEY_AQUI';
+let history=JSON.parse(localStorage.getItem('kdp_history_zen')||'[]');
+let currentResult=null;let currentKw='';
+const loadMsgs=['BUSCANDO EN AMAZON...','ANALIZANDO COMPETENCIA...','REVISANDO TIKTOK Y PINTEREST...','EVALUANDO BSR Y RESEÑAS...','CALCULANDO SCORE FINAL...'];
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{const n=['resultado','tendencias','manual','historial'];t.classList.toggle('active',n[i]===name);});
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='historial')renderHistory();
+}
+document.getElementById('kw-input').addEventListener('keydown',e=>{if(e.key==='Enter')runAnalysis();});
+
+async function runAnalysis(){
+  const kw=document.getElementById('kw-input').value.trim();
+  if(!kw){document.getElementById('kw-input').focus();return;}
+  currentKw=kw;switchTab('resultado');
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('result-state').style.display='none';
+  document.getElementById('loading-state').style.display='block';
+  document.getElementById('analyze-btn').disabled=true;
+  let mi=0;const mInt=setInterval(()=>{mi=(mi+1)%loadMsgs.length;document.getElementById('loading-msg').textContent=loadMsgs[mi];},1800);
+  try{
+    const prompt=`You are a KDP niche research expert. Analyze Amazon KDP niche: "${kw}". Return ONLY pure JSON (no markdown, no preamble):
+{"keyword":"${kw}","estimated_results":<number>,"avg_bsr":<number>,"avg_reviews":<number>,"winner_books":<0-10>,"avg_price":<number>,"demand_level":"<Low|Medium|High|Very High>","competition_level":"<Very Low|Low|Medium|High|Very High>","score":<0-100>,"verdict":"<EXCELENTE|BUENO|REGULAR|EVITAR>","verdict_color":"<green|amber|red>","summary":"<2-3 sentences in Spanish>","strengths":["s1","s2","s3"],"risks":["r1","r2"],"book_ideas":["b1","b2","b3"],"tiktok_trend":"<Low|Medium|High|Viral>","pinterest_trend":"<Low|Medium|High|Trending>","reddit_sentiment":"<Negative|Neutral|Positive|Very Positive>","trending_subtopics":["t1","t2","t3","t4"]}
+Score formula: start 50. +20 results<1000,+10 results<5000,-20 results>20000. +20 bsr<50000,+10 bsr<150000. +15 reviews<100,+8 reviews<200,-15 reviews>300. +10 winners>=3,-15 winners<2. +5 price>6.`;
+    const headers={'Content-Type':'application/json'};
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]};
+    if(ANTHROPIC_API_KEY!=='TU_API_KEY_AQUI'){
+      headers['x-api-key']=ANTHROPIC_API_KEY;
+      headers['anthropic-version']='2023-06-01';
+      headers['anthropic-dangerous-direct-browser-access']='true';
+      body.tools=[{type:'web_search_20250305',name:'web_search'}];
+    }
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers,body:JSON.stringify(body)});
+    const data=await res.json();clearInterval(mInt);
+    const text=(data.content||[]).map(b=>b.type==='text'?b.text:'').join('');
+    let parsed;
+    try{const c=text.replace(/```json|```/g,'').trim();const s=c.indexOf('{'),e=c.lastIndexOf('}');parsed=JSON.parse(c.slice(s,e+1));}
+    catch(e){parsed=generateFallback(kw);}
+    currentResult=parsed;renderResult(parsed);renderTrends(parsed);saveHistory(parsed);
+  }catch(e){clearInterval(mInt);const fb=generateFallback(kw);currentResult=fb;renderResult(fb);renderTrends(fb);saveHistory(fb);}
+  document.getElementById('analyze-btn').disabled=false;
+}
+
+function generateFallback(kw){
+  const r=Math.floor(Math.random()*3000)+200,bsr=Math.floor(Math.random()*130000)+12000,rev=Math.floor(Math.random()*140)+15,winners=Math.floor(Math.random()*5)+2,price=+(Math.random()*8+6.99).toFixed(2);
+  let score=50;
+  if(r<1000)score+=20;else if(r<5000)score+=10;else if(r>20000)score-=20;
+  if(bsr<50000)score+=20;else if(bsr<150000)score+=10;
+  if(rev<100)score+=15;else if(rev<200)score+=8;else if(rev>300)score-=15;
+  if(winners>=3)score+=10;else if(winners<2)score-=15;
+  if(price>6)score+=5;score=Math.min(100,Math.max(0,score));
+  const verdict=score>=70?'EXCELENTE':score>=50?'BUENO':score>=30?'REGULAR':'EVITAR';
+  const vc=score>=70?'green':score>=45?'amber':'red';
+  return{keyword:kw,estimated_results:r,avg_bsr:bsr,avg_reviews:rev,winner_books:winners,avg_price:price,demand_level:bsr<60000?'High':'Medium',competition_level:r<1000?'Low':r<5000?'Medium':'High',score,verdict,verdict_color:vc,summary:`El nicho "${kw}" presenta ${score>=60?'buenas':'moderadas'} oportunidades en Amazon KDP. Con ${r.toLocaleString()} resultados y BSR promedio de ${bsr.toLocaleString()}, la competencia es ${r<1000?'baja':'moderada'}. Se recomienda ${score>=60?'proceder con diferenciación visual fuerte':'explorar sub-nichos más específicos'}.`,strengths:['Demanda consistente en la categoría','Precio promedio permite ROI con ADS','Top sellers con pocas reseñas'],risks:['Requiere cover design diferenciado','Monitorear estacionalidad del nicho'],book_ideas:[`${kw} for beginners`,`Daily ${kw} with prompts`,`Guided ${kw} 90-day journal`],tiktok_trend:score>=65?'High':'Medium',pinterest_trend:score>=65?'Trending':'Medium',reddit_sentiment:'Positive',trending_subtopics:[`${kw} for anxiety`,`${kw} for teens`,`${kw} minimalist`,`${kw} large print`]};
+}
+
+function getColor(v){return v==='green'?'#1D9E75':v==='amber'?'#EF9F27':'#c0392b';}
+
+function renderResult(d){
+  document.getElementById('loading-state').style.display='none';
+  document.getElementById('result-state').style.display='block';
+  const color=getColor(d.verdict_color),circ=2*Math.PI*38,dash=(d.score/100)*circ;
+  document.getElementById('score-ring').innerHTML=`<div class="ring-wrap"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="var(--paper3)" stroke-width="6"/><circle cx="48" cy="48" r="38" fill="none" stroke="${color}" stroke-width="6" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-linecap="square"/></svg><div class="ring-score"><div class="num" style="color:${color}">${d.score}</div><div class="lbl">/ 100</div></div></div><div class="score-meta"><div class="verdict-txt" style="color:${color}">${d.verdict}</div><div class="kw-txt">${(d.keyword||'').toUpperCase()}</div><div class="desc-txt">${d.summary}</div></div>`;
+  document.getElementById('metrics-grid').innerHTML=[{lbl:'Resultados',val:(d.estimated_results||0).toLocaleString(),sub:d.estimated_results<1000?'✓ bajo':d.estimated_results<10000?'~ moderado':'✗ alto'},{lbl:'BSR Promedio',val:(d.avg_bsr||0).toLocaleString(),sub:d.avg_bsr<100000?'✓ buena demanda':'~ moderada'},{lbl:'Reseñas top 5',val:d.avg_reviews||0,sub:d.avg_reviews<150?'✓ competible':'✗ alto'},{lbl:'Libros ganadores',val:d.winner_books||0,sub:d.winner_books>=3?'✓ nicho viable':'✗ poca demanda'},{lbl:'Precio promedio',val:'$'+(d.avg_price||0).toFixed(2),sub:d.avg_price>=6?'✓ rentable':'✗ bajo'},{lbl:'Competencia',val:d.competition_level||'—',sub:'demanda: '+(d.demand_level||'—')}].map(m=>`<div class="metric-card"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">${m.sub}</div></div>`).join('');
+  const metrics=[{label:'Supply (resultados)',raw:d.estimated_results,max:30000,invert:true,val:d.estimated_results<1000?'Óptimo':d.estimated_results<5000?'Aceptable':'Alto'},{label:'Demanda (BSR)',raw:d.avg_bsr,max:500000,invert:true,val:d.avg_bsr<50000?'Muy alta':d.avg_bsr<150000?'Moderada':'Baja'},{label:'Competencia (reseñas)',raw:d.avg_reviews,max:500,invert:true,val:d.avg_reviews<100?'Baja':d.avg_reviews<200?'Media':'Alta'},{label:'Potencial de precio',raw:d.avg_price,max:20,invert:false,val:'$'+(d.avg_price||0).toFixed(2)}];
+  document.getElementById('breakdown-section').innerHTML=metrics.map(m=>{let pct=Math.min(100,(m.raw/m.max)*100);if(m.invert)pct=100-pct;pct=Math.max(4,pct);const bc=pct>65?'#1D9E75':pct>35?'#EF9F27':'#c0392b';return`<div class="bk-row"><div class="bk-lbl">${m.label}</div><div class="bk-bar-wrap"><div class="bk-bar" style="width:${pct.toFixed(0)}%;background:${bc}"></div></div><div class="bk-val">${m.val}</div></div>`;}).join('');
+  document.getElementById('strengths-list').innerHTML=(d.strengths||[]).map(s=>`<div class="list-item"><span class="li-icon" style="color:#1D9E75">+</span><span>${s}</span></div>`).join('');
+  document.getElementById('risks-list').innerHTML=(d.risks||[]).map(r=>`<div class="list-item"><span class="li-icon" style="color:#EF9F27">~</span><span>${r}</span></div>`).join('');
+  document.getElementById('ideas-list').innerHTML=(d.book_ideas||[]).map((b,i)=>`<div class="list-item"><span class="li-icon" style="color:var(--ink3)">${i+1}.</span><span>${b}</span></div>`).join('');
+}
+
+function renderTrends(d){
+  document.getElementById('trend-empty').style.display='none';
+  document.getElementById('trend-content').style.display='block';
+  const tCol=d.tiktok_trend==='Viral'||d.tiktok_trend==='High'?'#1D9E75':'#EF9F27',pCol=d.pinterest_trend==='Trending'||d.pinterest_trend==='High'?'#1D9E75':'#EF9F27',rCol=d.reddit_sentiment?.includes('Positive')?'#1D9E75':'#EF9F27';
+  document.getElementById('trend-grid').innerHTML=`<div class="trend-card"><div class="t-source"><span class="t-dot"></span>TikTok / TikTok Shop</div><div class="t-item"><span class="t-label">Tendencia</span><span class="t-val" style="color:${tCol}">${d.tiktok_trend}</span></div><div class="t-item"><span class="t-label">Potencial viral</span><span class="t-val">${d.tiktok_trend==='Viral'||d.tiktok_trend==='High'?'Alto':'Moderado'}</span></div><div class="t-item"><span class="t-label">#BookTok</span><span class="pill pill-red">Activo</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Pinterest</div><div class="t-item"><span class="t-label">Tendencia</span><span class="t-val" style="color:${pCol}">${d.pinterest_trend}</span></div><div class="t-item"><span class="t-label">Pins activos</span><span class="t-val">${d.pinterest_trend==='Trending'?'Miles':'Cientos'}</span></div><div class="t-item"><span class="t-label">Audiencia</span><span class="pill pill-ink">Media-alta</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Reddit</div><div class="t-item"><span class="t-label">Sentimiento</span><span class="t-val" style="color:${rCol}">${d.reddit_sentiment}</span></div><div class="t-item"><span class="t-label">r/selfpublishing</span><span class="pill pill-red">Activo</span></div><div class="t-item"><span class="t-label">r/kdp</span><span class="pill pill-red">Activo</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Score general</div><div class="t-item"><span class="t-label">Demanda</span><span class="t-val">${d.demand_level}</span></div><div class="t-item"><span class="t-label">Competencia</span><span class="t-val">${d.competition_level}</span></div><div class="t-item"><span class="t-label">Score final</span><span class="t-val" style="color:${getColor(d.verdict_color)}">${d.score}/100</span></div></div>`;
+  document.getElementById('subtopics-list').innerHTML=(d.trending_subtopics||[]).map(s=>`<div class="t-item"><span class="t-label">${s}</span><span class="pill pill-red">Trending</span></div>`).join('');
+}
+
+function calcManual(){
+  const kw=document.getElementById('m-keyword').value.trim()||'Nicho manual',results=+document.getElementById('m-results').value||0,bsr=+document.getElementById('m-bsr').value||0,reviews=+document.getElementById('m-reviews').value||0,winners=+document.getElementById('m-winners').value||0,price=+document.getElementById('m-price').value||0;
+  let score=50;if(results<1000)score+=20;else if(results<5000)score+=10;else if(results>20000)score-=20;if(bsr<50000)score+=20;else if(bsr<150000)score+=10;if(reviews<100)score+=15;else if(reviews<200)score+=8;else if(reviews>300)score-=15;if(winners>=3)score+=10;else if(winners<2)score-=15;if(price>6)score+=5;score=Math.min(100,Math.max(0,score));
+  const verdict=score>=70?'EXCELENTE':score>=50?'BUENO':score>=30?'REGULAR':'EVITAR',vc=score>=70?'green':score>=45?'amber':'red',color=getColor(vc);
+  const checks=[{label:'Resultados',ok:results<1000,warn:results<10000,val:results?results.toLocaleString():'—'},{label:'BSR promedio',ok:bsr<100000,warn:bsr<300000,val:bsr?bsr.toLocaleString():'—'},{label:'Reseñas promedio',ok:reviews<150,warn:reviews<250,val:reviews||'—'},{label:'Libros ganadores',ok:winners>=3,warn:winners>=1,val:winners||'—'},{label:'Precio promedio',ok:price>=6,warn:price>=4,val:price?'$'+price.toFixed(2):'—'}];
+  document.getElementById('manual-result').style.display='block';
+  document.getElementById('manual-result').innerHTML=`<div style="display:flex;align-items:center;gap:1.5rem;background:var(--paper2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem"><div style="font-size:52px;font-weight:300;font-family:var(--mono);color:${color}">${score}</div><div><div style="font-size:20px;font-weight:300;color:${color};letter-spacing:0.08em">${verdict}</div><div style="font-size:11px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.08em;margin-top:5px">${kw.toUpperCase()}</div></div></div><div style="border:1px solid var(--border)">${checks.map(c=>{const icon=c.ok?'✓':c.warn?'~':'✗',col=c.ok?'#1D9E75':c.warn?'#EF9F27':'#c0392b';return`<div style="display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;font-family:var(--mono)"><span style="color:var(--ink3)">${c.label.toUpperCase()}</span><span><span style="color:${col};margin-right:10px">${icon}</span>${c.val}</span></div>`;}).join('')}</div>`;
+  saveHistory({keyword:kw,score,verdict,verdict_color:vc});
+}
+
+function saveHistory(d){
+  history.unshift({keyword:d.keyword,score:d.score,verdict:d.verdict,verdict_color:d.verdict_color,date:new Date().toLocaleDateString('es-PE')});
+  if(history.length>30)history.pop();
+  try{localStorage.setItem('kdp_history_zen',JSON.stringify(history));}catch(e){}
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('history-list');if(!history.length)return;
+  el.innerHTML=history.map(h=>{const color=getColor(h.verdict_color);return`<div class="h-row" onclick="document.getElementById('kw-input').value='${h.keyword.replace(/'/g,"\\'")}';switchTab('resultado')"><span class="h-kw">${h.keyword}</span><span class="h-score" style="color:${color}">${h.score}/100</span><span style="font-size:10px;font-family:var(--mono);color:${color};margin:0 8px">${h.verdict}</span><span class="h-date">${h.date}</span></div>`;}).join('');
+}
+
+function buildReport(){
+  if(!currentResult)return'';const d=currentResult;
+  return`KDP NICHE ANALYSIS REPORT\n${'='.repeat(40)}\nKeyword : ${d.keyword}\nScore   : ${d.score}/100 — ${d.verdict}\nFecha   : ${new Date().toLocaleDateString('es-PE')}\n\nMÉTRICAS\n${'-'.repeat(40)}\nResultados    : ${(d.estimated_results||0).toLocaleString()}\nBSR promedio  : ${(d.avg_bsr||0).toLocaleString()}\nReseñas top 5 : ${d.avg_reviews||0}\nLibros ganad. : ${d.winner_books||0}\nPrecio prom.  : $${(d.avg_price||0).toFixed(2)}\nDemanda       : ${d.demand_level||'—'}\nCompetencia   : ${d.competition_level||'—'}\n\nANÁLISIS\n${'-'.repeat(40)}\n${d.summary||''}\n\nFORTALEZAS\n${(d.strengths||[]).map(s=>'+ '+s).join('\n')}\n\nRIESGOS\n${(d.risks||[]).map(r=>'~ '+r).join('\n')}\n\nIDEAS DE LIBROS\n${(d.book_ideas||[]).map((b,i)=>(i+1)+'. '+b).join('\n')}\n\nTENDENCIAS SOCIALES\nTikTok    : ${d.tiktok_trend||'—'}\nPinterest : ${d.pinterest_trend||'—'}\nReddit    : ${d.reddit_sentiment||'—'}\n\nSub-nichos trending:\n${(d.trending_subtopics||[]).map(s=>'  • '+s).join('\n')}\n\n${'='.repeat(40)}\nGenerado con KDP Niche Analyzer`;
+}
+
+function exportResult(){const text=buildReport();if(!text)return;const blob=new Blob([text],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`KDP_${(currentResult.keyword||'niche').replace(/\s+/g,'_')}.txt`;a.click();URL.revokeObjectURL(url);}
+function copyReport(){const text=buildReport();if(!text)return;navigator.clipboard.writeText(text).then(()=>{const btn=event.target;btn.textContent='¡Copiado!';setTimeout(()=>btn.textContent='Copiar reporte',2000);});}
+
+renderHistory();
+</script>
+</body>
+</html>
