@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -124,116 +124,116 @@ body{font-family:var(--serif);background:var(--paper3);color:var(--ink);min-heig
       <div class="kanji">本</div>
       <div class="title-text">
         <h1>KDP Niche Analyzer</h1>
-        <p>INVESTIGACIÓN DE NICHOS · AMAZON KDP</p>
+        <p>NICHE RESEARCH TOOL · AMAZON KDP</p>
       </div>
     </div>
-    <div class="zen-badge">IA + Web Search</div>
+    <div class="zen-badge">AI + Web Search</div>
   </div>
 
   <div class="search-wrap">
     <div class="search-row">
-      <input type="text" id="kw-input" placeholder="Ej: gratitude journal for women, coloring book anxiety adults..."/>
-      <button class="btn-analyze" id="analyze-btn" onclick="runAnalysis()">Analizar</button>
+      <input type="text" id="kw-input" placeholder="e.g. gratitude journal for women, coloring book anxiety adults..."/>
+      <button class="btn-analyze" id="analyze-btn" onclick="runAnalysis()">Analyze</button>
       <button class="btn-manual" onclick="switchTab('manual')">Manual</button>
     </div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('resultado')">Resultado</div>
-    <div class="tab" onclick="switchTab('tendencias')">Tendencias</div>
+    <div class="tab active" onclick="switchTab('result')">Result</div>
+    <div class="tab" onclick="switchTab('trends')">Trends</div>
     <div class="tab" onclick="switchTab('manual')">Manual</div>
-    <div class="tab" onclick="switchTab('historial')">Historial</div>
+    <div class="tab" onclick="switchTab('history')">History</div>
   </div>
 
-  <div id="tab-resultado" class="panel active">
+  <div id="tab-result" class="panel active">
     <div class="empty" id="empty-state">
       <div class="e-kanji">空</div>
-      <p>Ingresa una keyword para comenzar</p>
-      <p class="sub">LA IA ANALIZARÁ AMAZON · TIKTOK · PINTEREST · REDDIT</p>
+      <p>Enter a keyword above to get started</p>
+      <p class="sub">AI WILL SEARCH AMAZON · TIKTOK · PINTEREST · REDDIT</p>
     </div>
     <div id="loading-state" class="loading" style="display:none">
-      <div class="loading-kanji">道</div>
-      <p id="loading-msg">ANALIZANDO NICHO...</p>
+      <div class="loading-kanji">考</div>
+      <p id="loading-msg">ANALYZING NICHE...</p>
     </div>
     <div id="result-state" style="display:none">
       <div class="score-ring" id="score-ring"></div>
       <div class="metrics-grid" id="metrics-grid"></div>
       <div class="zen-section">
-        <div class="sec-label">Desglose de métricas</div>
+        <div class="sec-label">Metrics breakdown</div>
         <div id="breakdown-section"></div>
       </div>
       <div class="two-col">
-        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Fortalezas</div><div id="strengths-list"></div></div>
-        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Riesgos</div><div id="risks-list"></div></div>
+        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Strengths</div><div id="strengths-list"></div></div>
+        <div class="zen-section" style="margin-bottom:0"><div class="sec-label">Risks</div><div id="risks-list"></div></div>
       </div>
-      <div class="zen-section" style="margin-top:1rem"><div class="sec-label">Ideas de libros</div><div id="ideas-list"></div></div>
+      <div class="zen-section" style="margin-top:1rem"><div class="sec-label">Book ideas for this niche</div><div id="ideas-list"></div></div>
       <div class="action-row">
-        <button class="btn-action" onclick="exportResult()">Exportar .txt</button>
-        <button class="btn-action" onclick="copyReport()">Copiar reporte</button>
+        <button class="btn-action" onclick="exportResult()">Export .txt</button>
+        <button class="btn-action" onclick="copyReport()">Copy report</button>
       </div>
     </div>
   </div>
 
-  <div id="tab-tendencias" class="panel">
+  <div id="tab-trends" class="panel">
     <div class="empty" id="trend-empty">
       <div class="e-kanji">流</div>
-      <p>Analiza un nicho primero</p>
-      <p class="sub">LAS TENDENCIAS SE CARGAN CON EL ANÁLISIS</p>
+      <p>Analyze a niche first</p>
+      <p class="sub">TRENDS LOAD ALONGSIDE THE ANALYSIS</p>
     </div>
     <div id="trend-content" style="display:none">
       <div class="trend-grid" id="trend-grid"></div>
-      <div class="zen-section" style="margin-top:0"><div class="sec-label">Sub-nichos trending</div><div id="subtopics-list"></div></div>
+      <div class="zen-section" style="margin-top:0"><div class="sec-label">Trending sub-niches</div><div id="subtopics-list"></div></div>
     </div>
   </div>
 
   <div id="tab-manual" class="panel">
-    <p style="font-size:12px;font-family:var(--mono);color:var(--ink3);margin-bottom:1.5rem;letter-spacing:0.04em;line-height:1.7">Ingresa métricas de Titans Quick View, DS Quick View o Book Bolt para calcular el score al instante.</p>
+    <p style="font-size:12px;font-family:var(--mono);color:var(--ink3);margin-bottom:1.5rem;letter-spacing:0.04em;line-height:1.7">Enter metrics from Titans Quick View, DS Quick View or Book Bolt to calculate your niche score instantly.</p>
     <div class="manual-grid">
-      <div class="field"><label>Keyword / Nicho</label><input type="text" id="m-keyword" placeholder="gratitude journal for women"/></div>
-      <div class="field"><label>Resultados de búsqueda</label><input type="number" id="m-results" placeholder="850"/><span class="hint">IDEAL: MENOS DE 1,000</span></div>
-      <div class="field"><label>BSR promedio (top 5)</label><input type="number" id="m-bsr" placeholder="45000"/><span class="hint">IDEAL: MENOS DE 100,000</span></div>
-      <div class="field"><label>Reseñas promedio (top 5)</label><input type="number" id="m-reviews" placeholder="87"/><span class="hint">IDEAL: MENOS DE 150</span></div>
-      <div class="field"><label>Libros ganadores</label><input type="number" id="m-winners" placeholder="4"/><span class="hint">NECESITAS AL MENOS 3</span></div>
-      <div class="field"><label>Precio promedio ($)</label><input type="number" id="m-price" placeholder="9.99" step="0.01"/><span class="hint">IDEAL: $6 – $15+</span></div>
+      <div class="field"><label>Keyword / Niche</label><input type="text" id="m-keyword" placeholder="gratitude journal for women"/></div>
+      <div class="field"><label>Search results</label><input type="number" id="m-results" placeholder="850"/><span class="hint">IDEAL: LESS THAN 1,000</span></div>
+      <div class="field"><label>Average BSR (top 5)</label><input type="number" id="m-bsr" placeholder="45000"/><span class="hint">IDEAL: LESS THAN 100,000</span></div>
+      <div class="field"><label>Average reviews (top 5)</label><input type="number" id="m-reviews" placeholder="87"/><span class="hint">IDEAL: LESS THAN 150</span></div>
+      <div class="field"><label>Winner books found</label><input type="number" id="m-winners" placeholder="4"/><span class="hint">YOU NEED AT LEAST 3</span></div>
+      <div class="field"><label>Average price ($)</label><input type="number" id="m-price" placeholder="9.99" step="0.01"/><span class="hint">IDEAL: $6 – $15+</span></div>
     </div>
-    <button class="btn-analyze" style="height:42px;font-size:11px" onclick="calcManual()">Calcular Score</button>
+    <button class="btn-analyze" style="height:42px;font-size:11px" onclick="calcManual()">Calculate Score</button>
     <div id="manual-result" style="margin-top:1.5rem;display:none"></div>
   </div>
 
-  <div id="tab-historial" class="panel">
-    <div class="sec-label">Análisis recientes</div>
+  <div id="tab-history" class="panel">
+    <div class="sec-label">Recent analyses</div>
     <div id="history-list">
-      <div class="empty"><div class="e-kanji">無</div><p>Sin análisis guardados</p><p class="sub">SE GUARDAN AUTOMÁTICAMENTE</p></div>
+      <div class="empty"><div class="e-kanji">無</div><p>No analyses saved yet</p><p class="sub">THEY SAVE AUTOMATICALLY</p></div>
     </div>
   </div>
 </div>
 
 <script>
 const ANTHROPIC_API_KEY='TU_API_KEY_AQUI';
-let history=JSON.parse(localStorage.getItem('kdp_history_zen')||'[]');
+let history=JSON.parse(localStorage.getItem('kdp_history_en')||'[]');
 let currentResult=null;let currentKw='';
-const loadMsgs=['BUSCANDO EN AMAZON...','ANALIZANDO COMPETENCIA...','REVISANDO TIKTOK Y PINTEREST...','EVALUANDO BSR Y RESEÑAS...','CALCULANDO SCORE FINAL...'];
+const loadMsgs=['SEARCHING AMAZON...','ANALYZING COMPETITION...','CHECKING TIKTOK & PINTEREST...','EVALUATING BSR & REVIEWS...','CALCULATING FINAL SCORE...'];
 
 function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>{const n=['resultado','tendencias','manual','historial'];t.classList.toggle('active',n[i]===name);});
+  document.querySelectorAll('.tab').forEach((t,i)=>{const n=['result','trends','manual','history'];t.classList.toggle('active',n[i]===name);});
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if(name==='historial')renderHistory();
+  if(name==='history')renderHistory();
 }
 document.getElementById('kw-input').addEventListener('keydown',e=>{if(e.key==='Enter')runAnalysis();});
 
 async function runAnalysis(){
   const kw=document.getElementById('kw-input').value.trim();
   if(!kw){document.getElementById('kw-input').focus();return;}
-  currentKw=kw;switchTab('resultado');
+  currentKw=kw;switchTab('result');
   document.getElementById('empty-state').style.display='none';
   document.getElementById('result-state').style.display='none';
   document.getElementById('loading-state').style.display='block';
   document.getElementById('analyze-btn').disabled=true;
   let mi=0;const mInt=setInterval(()=>{mi=(mi+1)%loadMsgs.length;document.getElementById('loading-msg').textContent=loadMsgs[mi];},1800);
   try{
-    const prompt=`You are a KDP niche research expert. Analyze Amazon KDP niche: "${kw}". Return ONLY pure JSON (no markdown, no preamble):
-{"keyword":"${kw}","estimated_results":<number>,"avg_bsr":<number>,"avg_reviews":<number>,"winner_books":<0-10>,"avg_price":<number>,"demand_level":"<Low|Medium|High|Very High>","competition_level":"<Very Low|Low|Medium|High|Very High>","score":<0-100>,"verdict":"<EXCELENTE|BUENO|REGULAR|EVITAR>","verdict_color":"<green|amber|red>","summary":"<2-3 sentences in Spanish>","strengths":["s1","s2","s3"],"risks":["r1","r2"],"book_ideas":["b1","b2","b3"],"tiktok_trend":"<Low|Medium|High|Viral>","pinterest_trend":"<Low|Medium|High|Trending>","reddit_sentiment":"<Negative|Neutral|Positive|Very Positive>","trending_subtopics":["t1","t2","t3","t4"]}
+    const prompt=`You are a KDP (Kindle Direct Publishing) niche research expert. Analyze the Amazon KDP niche for the keyword: "${kw}". Return ONLY pure JSON (no markdown, no preamble):
+{"keyword":"${kw}","estimated_results":<number>,"avg_bsr":<number>,"avg_reviews":<number>,"winner_books":<0-10>,"avg_price":<number>,"demand_level":"<Low|Medium|High|Very High>","competition_level":"<Very Low|Low|Medium|High|Very High>","score":<0-100>,"verdict":"<EXCELLENT|GOOD|FAIR|AVOID>","verdict_color":"<green|amber|red>","summary":"<2-3 sentences in English explaining the opportunity>","strengths":["s1","s2","s3"],"risks":["r1","r2"],"book_ideas":["b1","b2","b3"],"tiktok_trend":"<Low|Medium|High|Viral>","pinterest_trend":"<Low|Medium|High|Trending>","reddit_sentiment":"<Negative|Neutral|Positive|Very Positive>","trending_subtopics":["t1","t2","t3","t4"]}
 Score formula: start 50. +20 results<1000,+10 results<5000,-20 results>20000. +20 bsr<50000,+10 bsr<150000. +15 reviews<100,+8 reviews<200,-15 reviews>300. +10 winners>=3,-15 winners<2. +5 price>6.`;
     const headers={'Content-Type':'application/json'};
     const body={model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]};
@@ -262,9 +262,9 @@ function generateFallback(kw){
   if(rev<100)score+=15;else if(rev<200)score+=8;else if(rev>300)score-=15;
   if(winners>=3)score+=10;else if(winners<2)score-=15;
   if(price>6)score+=5;score=Math.min(100,Math.max(0,score));
-  const verdict=score>=70?'EXCELENTE':score>=50?'BUENO':score>=30?'REGULAR':'EVITAR';
+  const verdict=score>=70?'EXCELLENT':score>=50?'GOOD':score>=30?'FAIR':'AVOID';
   const vc=score>=70?'green':score>=45?'amber':'red';
-  return{keyword:kw,estimated_results:r,avg_bsr:bsr,avg_reviews:rev,winner_books:winners,avg_price:price,demand_level:bsr<60000?'High':'Medium',competition_level:r<1000?'Low':r<5000?'Medium':'High',score,verdict,verdict_color:vc,summary:`El nicho "${kw}" presenta ${score>=60?'buenas':'moderadas'} oportunidades en Amazon KDP. Con ${r.toLocaleString()} resultados y BSR promedio de ${bsr.toLocaleString()}, la competencia es ${r<1000?'baja':'moderada'}. Se recomienda ${score>=60?'proceder con diferenciación visual fuerte':'explorar sub-nichos más específicos'}.`,strengths:['Demanda consistente en la categoría','Precio promedio permite ROI con ADS','Top sellers con pocas reseñas'],risks:['Requiere cover design diferenciado','Monitorear estacionalidad del nicho'],book_ideas:[`${kw} for beginners`,`Daily ${kw} with prompts`,`Guided ${kw} 90-day journal`],tiktok_trend:score>=65?'High':'Medium',pinterest_trend:score>=65?'Trending':'Medium',reddit_sentiment:'Positive',trending_subtopics:[`${kw} for anxiety`,`${kw} for teens`,`${kw} minimalist`,`${kw} large print`]};
+  return{keyword:kw,estimated_results:r,avg_bsr:bsr,avg_reviews:rev,winner_books:winners,avg_price:price,demand_level:bsr<60000?'High':'Medium',competition_level:r<1000?'Low':r<5000?'Medium':'High',score,verdict,verdict_color:vc,summary:`The niche "${kw}" shows ${score>=60?'good':'moderate'} opportunities on Amazon KDP. With ${r.toLocaleString()} results and an average BSR of ${bsr.toLocaleString()}, competition is ${r<1000?'low':'moderate'}. It is recommended to ${score>=60?'proceed with strong visual differentiation':'explore more specific sub-niches'}.`,strengths:['Consistent demand in this category','Average price allows positive ROI with ADS','Top sellers with few reviews'],risks:['Requires a differentiated cover design','Monitor niche seasonality'],book_ideas:[`${kw} for beginners`,`Daily ${kw} with prompts`,`Guided ${kw} 90-day journal`],tiktok_trend:score>=65?'High':'Medium',pinterest_trend:score>=65?'Trending':'Medium',reddit_sentiment:'Positive',trending_subtopics:[`${kw} for anxiety`,`${kw} for teens`,`${kw} minimalist`,`${kw} large print`]};
 }
 
 function getColor(v){return v==='green'?'#1D9E75':v==='amber'?'#EF9F27':'#c0392b';}
@@ -274,8 +274,20 @@ function renderResult(d){
   document.getElementById('result-state').style.display='block';
   const color=getColor(d.verdict_color),circ=2*Math.PI*38,dash=(d.score/100)*circ;
   document.getElementById('score-ring').innerHTML=`<div class="ring-wrap"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="var(--paper3)" stroke-width="6"/><circle cx="48" cy="48" r="38" fill="none" stroke="${color}" stroke-width="6" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-linecap="square"/></svg><div class="ring-score"><div class="num" style="color:${color}">${d.score}</div><div class="lbl">/ 100</div></div></div><div class="score-meta"><div class="verdict-txt" style="color:${color}">${d.verdict}</div><div class="kw-txt">${(d.keyword||'').toUpperCase()}</div><div class="desc-txt">${d.summary}</div></div>`;
-  document.getElementById('metrics-grid').innerHTML=[{lbl:'Resultados',val:(d.estimated_results||0).toLocaleString(),sub:d.estimated_results<1000?'✓ bajo':d.estimated_results<10000?'~ moderado':'✗ alto'},{lbl:'BSR Promedio',val:(d.avg_bsr||0).toLocaleString(),sub:d.avg_bsr<100000?'✓ buena demanda':'~ moderada'},{lbl:'Reseñas top 5',val:d.avg_reviews||0,sub:d.avg_reviews<150?'✓ competible':'✗ alto'},{lbl:'Libros ganadores',val:d.winner_books||0,sub:d.winner_books>=3?'✓ nicho viable':'✗ poca demanda'},{lbl:'Precio promedio',val:'$'+(d.avg_price||0).toFixed(2),sub:d.avg_price>=6?'✓ rentable':'✗ bajo'},{lbl:'Competencia',val:d.competition_level||'—',sub:'demanda: '+(d.demand_level||'—')}].map(m=>`<div class="metric-card"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">${m.sub}</div></div>`).join('');
-  const metrics=[{label:'Supply (resultados)',raw:d.estimated_results,max:30000,invert:true,val:d.estimated_results<1000?'Óptimo':d.estimated_results<5000?'Aceptable':'Alto'},{label:'Demanda (BSR)',raw:d.avg_bsr,max:500000,invert:true,val:d.avg_bsr<50000?'Muy alta':d.avg_bsr<150000?'Moderada':'Baja'},{label:'Competencia (reseñas)',raw:d.avg_reviews,max:500,invert:true,val:d.avg_reviews<100?'Baja':d.avg_reviews<200?'Media':'Alta'},{label:'Potencial de precio',raw:d.avg_price,max:20,invert:false,val:'$'+(d.avg_price||0).toFixed(2)}];
+  document.getElementById('metrics-grid').innerHTML=[
+    {lbl:'Search results',val:(d.estimated_results||0).toLocaleString(),sub:d.estimated_results<1000?'✓ low':d.estimated_results<10000?'~ moderate':'✗ high'},
+    {lbl:'Avg BSR',val:(d.avg_bsr||0).toLocaleString(),sub:d.avg_bsr<100000?'✓ good demand':'~ moderate'},
+    {lbl:'Avg reviews (top 5)',val:d.avg_reviews||0,sub:d.avg_reviews<150?'✓ beatable':'✗ high'},
+    {lbl:'Winner books',val:d.winner_books||0,sub:d.winner_books>=3?'✓ viable niche':'✗ low demand'},
+    {lbl:'Avg price',val:'$'+(d.avg_price||0).toFixed(2),sub:d.avg_price>=6?'✓ profitable':'✗ low'},
+    {lbl:'Competition',val:d.competition_level||'—',sub:'demand: '+(d.demand_level||'—')},
+  ].map(m=>`<div class="metric-card"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">${m.sub}</div></div>`).join('');
+  const metrics=[
+    {label:'Supply (results)',raw:d.estimated_results,max:30000,invert:true,val:d.estimated_results<1000?'Optimal':d.estimated_results<5000?'Acceptable':'High'},
+    {label:'Demand (BSR)',raw:d.avg_bsr,max:500000,invert:true,val:d.avg_bsr<50000?'Very high':d.avg_bsr<150000?'Moderate':'Low'},
+    {label:'Competition (reviews)',raw:d.avg_reviews,max:500,invert:true,val:d.avg_reviews<100?'Low':d.avg_reviews<200?'Medium':'High'},
+    {label:'Price potential',raw:d.avg_price,max:20,invert:false,val:'$'+(d.avg_price||0).toFixed(2)},
+  ];
   document.getElementById('breakdown-section').innerHTML=metrics.map(m=>{let pct=Math.min(100,(m.raw/m.max)*100);if(m.invert)pct=100-pct;pct=Math.max(4,pct);const bc=pct>65?'#1D9E75':pct>35?'#EF9F27':'#c0392b';return`<div class="bk-row"><div class="bk-lbl">${m.label}</div><div class="bk-bar-wrap"><div class="bk-bar" style="width:${pct.toFixed(0)}%;background:${bc}"></div></div><div class="bk-val">${m.val}</div></div>`;}).join('');
   document.getElementById('strengths-list').innerHTML=(d.strengths||[]).map(s=>`<div class="list-item"><span class="li-icon" style="color:#1D9E75">+</span><span>${s}</span></div>`).join('');
   document.getElementById('risks-list').innerHTML=(d.risks||[]).map(r=>`<div class="list-item"><span class="li-icon" style="color:#EF9F27">~</span><span>${r}</span></div>`).join('');
@@ -286,39 +298,85 @@ function renderTrends(d){
   document.getElementById('trend-empty').style.display='none';
   document.getElementById('trend-content').style.display='block';
   const tCol=d.tiktok_trend==='Viral'||d.tiktok_trend==='High'?'#1D9E75':'#EF9F27',pCol=d.pinterest_trend==='Trending'||d.pinterest_trend==='High'?'#1D9E75':'#EF9F27',rCol=d.reddit_sentiment?.includes('Positive')?'#1D9E75':'#EF9F27';
-  document.getElementById('trend-grid').innerHTML=`<div class="trend-card"><div class="t-source"><span class="t-dot"></span>TikTok / TikTok Shop</div><div class="t-item"><span class="t-label">Tendencia</span><span class="t-val" style="color:${tCol}">${d.tiktok_trend}</span></div><div class="t-item"><span class="t-label">Potencial viral</span><span class="t-val">${d.tiktok_trend==='Viral'||d.tiktok_trend==='High'?'Alto':'Moderado'}</span></div><div class="t-item"><span class="t-label">#BookTok</span><span class="pill pill-red">Activo</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Pinterest</div><div class="t-item"><span class="t-label">Tendencia</span><span class="t-val" style="color:${pCol}">${d.pinterest_trend}</span></div><div class="t-item"><span class="t-label">Pins activos</span><span class="t-val">${d.pinterest_trend==='Trending'?'Miles':'Cientos'}</span></div><div class="t-item"><span class="t-label">Audiencia</span><span class="pill pill-ink">Media-alta</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Reddit</div><div class="t-item"><span class="t-label">Sentimiento</span><span class="t-val" style="color:${rCol}">${d.reddit_sentiment}</span></div><div class="t-item"><span class="t-label">r/selfpublishing</span><span class="pill pill-red">Activo</span></div><div class="t-item"><span class="t-label">r/kdp</span><span class="pill pill-red">Activo</span></div></div><div class="trend-card"><div class="t-source"><span class="t-dot"></span>Score general</div><div class="t-item"><span class="t-label">Demanda</span><span class="t-val">${d.demand_level}</span></div><div class="t-item"><span class="t-label">Competencia</span><span class="t-val">${d.competition_level}</span></div><div class="t-item"><span class="t-label">Score final</span><span class="t-val" style="color:${getColor(d.verdict_color)}">${d.score}/100</span></div></div>`;
+  document.getElementById('trend-grid').innerHTML=`
+    <div class="trend-card"><div class="t-source"><span class="t-dot"></span>TikTok / TikTok Shop</div>
+      <div class="t-item"><span class="t-label">Trend level</span><span class="t-val" style="color:${tCol}">${d.tiktok_trend}</span></div>
+      <div class="t-item"><span class="t-label">Viral potential</span><span class="t-val">${d.tiktok_trend==='Viral'||d.tiktok_trend==='High'?'High':'Moderate'}</span></div>
+      <div class="t-item"><span class="t-label">#BookTok</span><span class="pill pill-red">Active</span></div>
+    </div>
+    <div class="trend-card"><div class="t-source"><span class="t-dot"></span>Pinterest</div>
+      <div class="t-item"><span class="t-label">Trend level</span><span class="t-val" style="color:${pCol}">${d.pinterest_trend}</span></div>
+      <div class="t-item"><span class="t-label">Active pins</span><span class="t-val">${d.pinterest_trend==='Trending'?'Thousands':'Hundreds'}</span></div>
+      <div class="t-item"><span class="t-label">Buyer audience</span><span class="pill pill-ink">Medium-high</span></div>
+    </div>
+    <div class="trend-card"><div class="t-source"><span class="t-dot"></span>Reddit</div>
+      <div class="t-item"><span class="t-label">Sentiment</span><span class="t-val" style="color:${rCol}">${d.reddit_sentiment}</span></div>
+      <div class="t-item"><span class="t-label">r/selfpublishing</span><span class="pill pill-red">Active</span></div>
+      <div class="t-item"><span class="t-label">r/kdp</span><span class="pill pill-red">Active</span></div>
+    </div>
+    <div class="trend-card"><div class="t-source"><span class="t-dot"></span>Overall score</div>
+      <div class="t-item"><span class="t-label">Demand</span><span class="t-val">${d.demand_level}</span></div>
+      <div class="t-item"><span class="t-label">Competition</span><span class="t-val">${d.competition_level}</span></div>
+      <div class="t-item"><span class="t-label">Final score</span><span class="t-val" style="color:${getColor(d.verdict_color)}">${d.score}/100</span></div>
+    </div>`;
   document.getElementById('subtopics-list').innerHTML=(d.trending_subtopics||[]).map(s=>`<div class="t-item"><span class="t-label">${s}</span><span class="pill pill-red">Trending</span></div>`).join('');
 }
 
 function calcManual(){
-  const kw=document.getElementById('m-keyword').value.trim()||'Nicho manual',results=+document.getElementById('m-results').value||0,bsr=+document.getElementById('m-bsr').value||0,reviews=+document.getElementById('m-reviews').value||0,winners=+document.getElementById('m-winners').value||0,price=+document.getElementById('m-price').value||0;
+  const kw=document.getElementById('m-keyword').value.trim()||'Manual niche',results=+document.getElementById('m-results').value||0,bsr=+document.getElementById('m-bsr').value||0,reviews=+document.getElementById('m-reviews').value||0,winners=+document.getElementById('m-winners').value||0,price=+document.getElementById('m-price').value||0;
   let score=50;if(results<1000)score+=20;else if(results<5000)score+=10;else if(results>20000)score-=20;if(bsr<50000)score+=20;else if(bsr<150000)score+=10;if(reviews<100)score+=15;else if(reviews<200)score+=8;else if(reviews>300)score-=15;if(winners>=3)score+=10;else if(winners<2)score-=15;if(price>6)score+=5;score=Math.min(100,Math.max(0,score));
-  const verdict=score>=70?'EXCELENTE':score>=50?'BUENO':score>=30?'REGULAR':'EVITAR',vc=score>=70?'green':score>=45?'amber':'red',color=getColor(vc);
-  const checks=[{label:'Resultados',ok:results<1000,warn:results<10000,val:results?results.toLocaleString():'—'},{label:'BSR promedio',ok:bsr<100000,warn:bsr<300000,val:bsr?bsr.toLocaleString():'—'},{label:'Reseñas promedio',ok:reviews<150,warn:reviews<250,val:reviews||'—'},{label:'Libros ganadores',ok:winners>=3,warn:winners>=1,val:winners||'—'},{label:'Precio promedio',ok:price>=6,warn:price>=4,val:price?'$'+price.toFixed(2):'—'}];
+  const verdict=score>=70?'EXCELLENT':score>=50?'GOOD':score>=30?'FAIR':'AVOID',vc=score>=70?'green':score>=45?'amber':'red',color=getColor(vc);
+  const checks=[
+    {label:'Search results',ok:results<1000,warn:results<10000,val:results?results.toLocaleString():'—'},
+    {label:'Avg BSR',ok:bsr<100000,warn:bsr<300000,val:bsr?bsr.toLocaleString():'—'},
+    {label:'Avg reviews',ok:reviews<150,warn:reviews<250,val:reviews||'—'},
+    {label:'Winner books',ok:winners>=3,warn:winners>=1,val:winners||'—'},
+    {label:'Avg price',ok:price>=6,warn:price>=4,val:price?'$'+price.toFixed(2):'—'},
+  ];
   document.getElementById('manual-result').style.display='block';
-  document.getElementById('manual-result').innerHTML=`<div style="display:flex;align-items:center;gap:1.5rem;background:var(--paper2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem"><div style="font-size:52px;font-weight:300;font-family:var(--mono);color:${color}">${score}</div><div><div style="font-size:20px;font-weight:300;color:${color};letter-spacing:0.08em">${verdict}</div><div style="font-size:11px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.08em;margin-top:5px">${kw.toUpperCase()}</div></div></div><div style="border:1px solid var(--border)">${checks.map(c=>{const icon=c.ok?'✓':c.warn?'~':'✗',col=c.ok?'#1D9E75':c.warn?'#EF9F27':'#c0392b';return`<div style="display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;font-family:var(--mono)"><span style="color:var(--ink3)">${c.label.toUpperCase()}</span><span><span style="color:${col};margin-right:10px">${icon}</span>${c.val}</span></div>`;}).join('')}</div>`;
+  document.getElementById('manual-result').innerHTML=`
+    <div style="display:flex;align-items:center;gap:1.5rem;background:var(--paper2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem">
+      <div style="font-size:52px;font-weight:300;font-family:var(--mono);color:${color}">${score}</div>
+      <div>
+        <div style="font-size:20px;font-weight:300;color:${color};letter-spacing:0.08em">${verdict}</div>
+        <div style="font-size:11px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.08em;margin-top:5px">${kw.toUpperCase()}</div>
+      </div>
+    </div>
+    <div style="border:1px solid var(--border)">
+      ${checks.map(c=>{const icon=c.ok?'✓':c.warn?'~':'✗',col=c.ok?'#1D9E75':c.warn?'#EF9F27':'#c0392b';
+        return`<div style="display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;font-family:var(--mono)">
+          <span style="color:var(--ink3)">${c.label.toUpperCase()}</span>
+          <span><span style="color:${col};margin-right:10px">${icon}</span>${c.val}</span>
+        </div>`;}).join('')}
+    </div>`;
   saveHistory({keyword:kw,score,verdict,verdict_color:vc});
 }
 
 function saveHistory(d){
-  history.unshift({keyword:d.keyword,score:d.score,verdict:d.verdict,verdict_color:d.verdict_color,date:new Date().toLocaleDateString('es-PE')});
+  history.unshift({keyword:d.keyword,score:d.score,verdict:d.verdict,verdict_color:d.verdict_color,date:new Date().toLocaleDateString('en-US')});
   if(history.length>30)history.pop();
-  try{localStorage.setItem('kdp_history_zen',JSON.stringify(history));}catch(e){}
+  try{localStorage.setItem('kdp_history_en',JSON.stringify(history));}catch(e){}
   renderHistory();
 }
 
 function renderHistory(){
   const el=document.getElementById('history-list');if(!history.length)return;
-  el.innerHTML=history.map(h=>{const color=getColor(h.verdict_color);return`<div class="h-row" onclick="document.getElementById('kw-input').value='${h.keyword.replace(/'/g,"\\'")}';switchTab('resultado')"><span class="h-kw">${h.keyword}</span><span class="h-score" style="color:${color}">${h.score}/100</span><span style="font-size:10px;font-family:var(--mono);color:${color};margin:0 8px">${h.verdict}</span><span class="h-date">${h.date}</span></div>`;}).join('');
+  el.innerHTML=history.map(h=>{const color=getColor(h.verdict_color);
+    return`<div class="h-row" onclick="document.getElementById('kw-input').value='${h.keyword.replace(/'/g,"\\'")}';switchTab('result')">
+      <span class="h-kw">${h.keyword}</span>
+      <span class="h-score" style="color:${color}">${h.score}/100</span>
+      <span style="font-size:10px;font-family:var(--mono);color:${color};margin:0 8px">${h.verdict}</span>
+      <span class="h-date">${h.date}</span>
+    </div>`;}).join('');
 }
 
 function buildReport(){
   if(!currentResult)return'';const d=currentResult;
-  return`KDP NICHE ANALYSIS REPORT\n${'='.repeat(40)}\nKeyword : ${d.keyword}\nScore   : ${d.score}/100 — ${d.verdict}\nFecha   : ${new Date().toLocaleDateString('es-PE')}\n\nMÉTRICAS\n${'-'.repeat(40)}\nResultados    : ${(d.estimated_results||0).toLocaleString()}\nBSR promedio  : ${(d.avg_bsr||0).toLocaleString()}\nReseñas top 5 : ${d.avg_reviews||0}\nLibros ganad. : ${d.winner_books||0}\nPrecio prom.  : $${(d.avg_price||0).toFixed(2)}\nDemanda       : ${d.demand_level||'—'}\nCompetencia   : ${d.competition_level||'—'}\n\nANÁLISIS\n${'-'.repeat(40)}\n${d.summary||''}\n\nFORTALEZAS\n${(d.strengths||[]).map(s=>'+ '+s).join('\n')}\n\nRIESGOS\n${(d.risks||[]).map(r=>'~ '+r).join('\n')}\n\nIDEAS DE LIBROS\n${(d.book_ideas||[]).map((b,i)=>(i+1)+'. '+b).join('\n')}\n\nTENDENCIAS SOCIALES\nTikTok    : ${d.tiktok_trend||'—'}\nPinterest : ${d.pinterest_trend||'—'}\nReddit    : ${d.reddit_sentiment||'—'}\n\nSub-nichos trending:\n${(d.trending_subtopics||[]).map(s=>'  • '+s).join('\n')}\n\n${'='.repeat(40)}\nGenerado con KDP Niche Analyzer`;
+  return`KDP NICHE ANALYSIS REPORT\n${'='.repeat(40)}\nKeyword     : ${d.keyword}\nScore       : ${d.score}/100 — ${d.verdict}\nDate        : ${new Date().toLocaleDateString('en-US')}\n\nKEY METRICS\n${'-'.repeat(40)}\nSearch results : ${(d.estimated_results||0).toLocaleString()}\nAvg BSR (top5) : ${(d.avg_bsr||0).toLocaleString()}\nAvg reviews    : ${d.avg_reviews||0}\nWinner books   : ${d.winner_books||0}\nAvg price      : $${(d.avg_price||0).toFixed(2)}\nDemand level   : ${d.demand_level||'—'}\nCompetition    : ${d.competition_level||'—'}\n\nANALYSIS\n${'-'.repeat(40)}\n${d.summary||''}\n\nSTRENGTHS\n${(d.strengths||[]).map(s=>'+ '+s).join('\n')}\n\nRISKS\n${(d.risks||[]).map(r=>'~ '+r).join('\n')}\n\nBOOK IDEAS\n${(d.book_ideas||[]).map((b,i)=>(i+1)+'. '+b).join('\n')}\n\nSOCIAL TRENDS\nTikTok    : ${d.tiktok_trend||'—'}\nPinterest : ${d.pinterest_trend||'—'}\nReddit    : ${d.reddit_sentiment||'—'}\n\nTrending sub-niches:\n${(d.trending_subtopics||[]).map(s=>'  • '+s).join('\n')}\n\n${'='.repeat(40)}\nGenerated with KDP Niche Analyzer`;
 }
 
 function exportResult(){const text=buildReport();if(!text)return;const blob=new Blob([text],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`KDP_${(currentResult.keyword||'niche').replace(/\s+/g,'_')}.txt`;a.click();URL.revokeObjectURL(url);}
-function copyReport(){const text=buildReport();if(!text)return;navigator.clipboard.writeText(text).then(()=>{const btn=event.target;btn.textContent='¡Copiado!';setTimeout(()=>btn.textContent='Copiar reporte',2000);});}
+function copyReport(){const text=buildReport();if(!text)return;navigator.clipboard.writeText(text).then(()=>{const btn=event.target;btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy report',2000);});}
 
 renderHistory();
 </script>
